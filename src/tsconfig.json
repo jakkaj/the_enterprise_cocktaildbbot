@@ -6,6 +6,6 @@
         "sourceMap": true,        
         "outDir": "../output/run",
         "experimentalDecorators": true, 
-        "watch": true    
+        "watch": false    
     }
 }
