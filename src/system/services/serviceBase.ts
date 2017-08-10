@@ -11,7 +11,7 @@ export class configBase{
     
     public static Container:Container;
 
-    public resolve<T>(symbol:symbol){
+    public resolve<T>(symbol:symbol|string){
         return configBase.Container.get<T>(symbol);
     }
 }

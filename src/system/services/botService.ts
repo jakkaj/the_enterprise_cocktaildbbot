@@ -53,17 +53,17 @@ export class botService extends serviceBase implements contracts.IBotService {
             console.log(dialog.id);
         }
 
-        // var dlThings: contracts.graphDialog[] = new Array<contracts.graphDialog>();
-        // dlThings.push(this.getStartOrderDialogData());
-        // dlThings.push(this.getOpeningTimesDialogData());
-        
+        //load dynamic configs
 
-        // for(let i in dlThings){
-        //     let dialogConfig = dlThings[i];
-        //     let dDynamic:contracts.IDialog = this.resolve<contracts.IDialog>(contracts.contractSymbols.dataDialog);           
-        //     dDynamic.init(dialogConfig);
-        //     this._bot.dialog(dDynamic.id, dDynamic.waterfall).triggerAction({ matches: dDynamic.trigger });
-        // }        
+        var dynamicConfigs: contracts.graphDialog[] = new Array<contracts.graphDialog>();
+        dynamicConfigs.push(this.getFindIngredientsDialogData());       
+
+        for(let i in dynamicConfigs){
+            let dialogConfig = dynamicConfigs[i];
+            let dynamicDialog:contracts.IDialog = this.resolve<contracts.IDialog>(contracts.contractSymbols.dataDialog);           
+            dynamicDialog.init(dialogConfig);
+            this._bot.dialog(dynamicDialog.id, dynamicDialog.waterfall).triggerAction({ matches: dynamicDialog.trigger });
+        }        
     }
 
     /**
@@ -81,40 +81,15 @@ export class botService extends serviceBase implements contracts.IBotService {
         }
     }
 
-    getTestDialogData(): contracts.graphDialog {
-
+   
+    /**
+     * Load a dialog that prepares data for the search by ingredient service
+     * @returns contracts.graphDialog
+     */
+    getFindIngredientsDialogData():contracts.graphDialog{        
         var fields: contracts.dialogField[] = [{
-            entityName: 'category',
-            promptText: 'Please enter a category'
-        }];
-
-        var d: contracts.dialogData = {
-            fields: fields
-        }
-
-        // var graphDialog: contracts.graphDialog = {
-        //     isLuis: true,
-        //     triggerText: 'SubmitTicket',
-        //     id: 'submitTicketDialog',
-        //     data: d,
-        //     initialSay: 'Okay! So you want to submit a ticket hey? Lets get that sorted'
-        // }
-
-        var graphDialog: contracts.graphDialog = {
-            isLuis: false,
-            triggerRegex: /^subs$/i,
-            id: 'submitTicketDialog',
-            data: d,
-            initialSay: 'Okay! So you want to submit a ticket hey? Lets get that sorted'
-        }
-
-        return graphDialog;
-    }
-
-    getOpeningTimesDialogData():contracts.graphDialog{        
-        var fields: contracts.dialogField[] = [{
-            entityName: 'postcode',
-            promptText: 'Which post code?'
+            entityName: 'ingredient',
+            promptText: 'Which ingredient are you looking to make a drink with?'
         }];
 
         var d:contracts.dialogData = {
@@ -123,37 +98,37 @@ export class botService extends serviceBase implements contracts.IBotService {
 
         var graphDialog:contracts.graphDialog = {
             isLuis: true,
-            triggerText: 'ShowOpeningTimes',
-            id: 'openingTimesDialog',
+            triggerText: 'What cocktails have this ingredient',
+            id: 'cocktailByIngredient',
             data: d,
-            initialSay: `So you're looking for opening times.`,
+            initialSay: `Okay let's find some cocktails by their ingredients.`,
             action:{
-                serviceUrlAfter:"https://graphpizza.azurewebsites.net/api/OpeningTimes?code=LEg3pxudN1cxVi/aQvjx9IPQzy1bLJyqVqcfIW9iMVJh5BAdULXF6Q=="
+                serviceRunnerAfter:"findByIngredientServiceRunner"
             }
         }
 
         return graphDialog;
     }
 
-    getStartOrderDialogData():contracts.graphDialog{        
-        var fields: contracts.dialogField[] = [{
-            entityName: 'deliveryMode',
-            promptText: 'Would you like take away or home delivery?',
-            choice:["Home Delivery", "Pickup"]
-        }];
+    // getStartOrderDialogData():contracts.graphDialog{        
+    //     var fields: contracts.dialogField[] = [{
+    //         entityName: 'deliveryMode',
+    //         promptText: 'Would you like take away or home delivery?',
+    //         choice:["Home Delivery", "Pickup"]
+    //     }];
 
-        var d:contracts.dialogData = {
-            fields:fields
-        }
+    //     var d:contracts.dialogData = {
+    //         fields:fields
+    //     }
 
-        var graphDialog:contracts.graphDialog = {
-            isLuis: true,
-            triggerText: 'StartOrder',
-            id: 'startOrderDialog',
-            data: d,
-            initialSay: `Okay, let's get us some pizza!`           
-        }
+    //     var graphDialog:contracts.graphDialog = {
+    //         isLuis: true,
+    //         triggerText: 'StartOrder',
+    //         id: 'startOrderDialog',
+    //         data: d,
+    //         initialSay: `Okay, let's get us some pizza!`           
+    //     }
 
-        return graphDialog;
-    }
+    //     return graphDialog;
+    // }
 }

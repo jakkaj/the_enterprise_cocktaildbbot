@@ -29,12 +29,9 @@ export default class mainCocktailSearchDialog extends serviceBase implements con
         this._cocktailService = cocktailService;
     }
 
-
-
     public get waterfall(): builder.IDialogWaterfallStep[] {
         return [this.step1.bind(this), this.step2.bind(this)];
     }
-
 
     /**
     * Step 1
@@ -49,13 +46,17 @@ export default class mainCocktailSearchDialog extends serviceBase implements con
             session.endConversation('something went wrong- couldn\'t get intent');
         }
 
+        var jsoned = JSON.stringify(args);
+
+        console.log(jsoned);
+
         let entity = builder.EntityRecognizer.findEntity(args.intent.entities, 'cocktail name');
 
         if (entity) {
             next({ response: entity.entity });
         }
         else {
-            builder.Prompts.text(session, 'Please provide cocktail name');
+            builder.Prompts.text(session, 'Okay sure, what kind of cocktail are you looking for?');
         }
     }
 
@@ -76,6 +77,7 @@ export default class mainCocktailSearchDialog extends serviceBase implements con
 
         if (!cocktailResult || cocktailResult.length == 0) {
             session.endDialog(`Sorry, I couldn't find any cocktails named ${result}`);
+            return;
         }
 
         session.send(`Found ${cocktailResult.length} results`);

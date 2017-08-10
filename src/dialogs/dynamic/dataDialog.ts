@@ -4,6 +4,7 @@ import * as builder from 'botbuilder';
 import { serviceBase } from './../../system/services/serviceBase';
 import * as contracts  from '../../system/contract/contracts';
 import dynamicDialogBase from './dynamicDialogBase';
+import cardConverter from "../../system/helpers/cardConverter";
 
 /**
  * dataDialog is a dialog that can take external configuration to build a waterfall bot dialog, 
@@ -210,6 +211,8 @@ export default class dataDialog extends dynamicDialogBase{
             
             this._setPreviousStep(session, results, previousFieldName);
 
+            session.sendTyping();
+
             if(this._dialog.action){
                 var action = this._dialog.action;
 
@@ -219,6 +222,29 @@ export default class dataDialog extends dynamicDialogBase{
                     if(result.text){
                         session.send(result.text);
                     }
+                }
+
+                if(action.serviceRunnerAfter){
+                    var runner = this.resolve<contracts.IServiceRunner>(action.serviceRunnerAfter);
+                    var runnerResult = await runner.run(session.dialogData);
+                    
+                    if(runnerResult.text){
+                        session.send(runnerResult.text);
+                    }
+                    
+                    if(runnerResult.heroCards && runnerResult.heroCards.length > 0){
+                        var converter = new cardConverter();
+                        var heros = converter.basicCardToHeroCard(runnerResult.heroCards, session);                     
+
+                        var reply = new builder.Message(session)                       
+                            .attachments(heros);
+                    
+                        if(heros.length > 1){
+                            reply.attachmentLayout(builder.AttachmentLayout.carousel);
+                        }
+
+                        session.send(reply)
+                    }                    
                 }
             }
 

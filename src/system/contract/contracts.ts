@@ -1,5 +1,23 @@
 import * as builder from 'botbuilder';
 
+export interface IServiceRunner{
+    run(args: any):Promise<IServiceRunnerResult>;
+}
+
+export interface IServiceRunnerResult{
+    success:boolean;
+    text?:string;
+    heroCards?:heroCard[];
+}
+
+export interface heroCard {
+    title: string;
+    subtitle: string;
+    text: string;
+    images?: string[];
+    buttons?: [string,string][];
+}
+
 interface ILogService{
     log(logMessage: string);
     setLogCallback(callback:(logMessage:string) => any);
@@ -41,6 +59,7 @@ interface graphDialog{
 
 interface dialogAction{    
     serviceUrlAfter?:string;
+    serviceRunnerAfter?:string;
     nextDialog?:string;
 }
 

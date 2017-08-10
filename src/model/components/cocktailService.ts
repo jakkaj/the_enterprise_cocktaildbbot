@@ -30,10 +30,39 @@ export class cocktailService extends serviceBase implements modelContracts.ICock
         this._netClient = netClient;
     }
 
+    public async getRandomCocktail(): Promise<modelContracts.ICocktail[]> {
+        //http://www.thecocktaildb.com/api/json/v1/1/random.php
+
+        let url = `http://www.thecocktaildb.com/`;
+        let path = `/api/json/v1/1/random.php`;
+
+        return await this._runQuery(url, path);
+    }
+
+    public async getByIngredient(ingredientName: string, max:number = 5): Promise<modelContracts.ICocktail[]> {
+        //http://www.thecocktaildb.com/api/json/v1/1/filter.php?i=Gin
+        let url = `http://www.thecocktaildb.com/`;
+        let path = `/api/json/v1/1/filter.php?i=${ingredientName}`;
+
+        return await this._runQuery(url, path, max);
+    }
+
     public async getCocktails(cocktailName: string, max: number = 5): Promise<modelContracts.ICocktail[]> {
         let url = `http://www.thecocktaildb.com/`;
         let path = `/api/json/v1/1/search.php?s=${cocktailName}`;
 
+        return await this._runQuery(url, path, max);
+    }
+
+    public async getById(id: string): Promise<modelContracts.ICocktail[]> {
+        let url = `http://www.thecocktaildb.com/`;
+        let path = `/api/json/v1/1/lookup.php?i=${id}`;    
+        return await this._runQuery(url, path);    
+    }
+
+    //http://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=15112
+
+    private async _runQuery(url: string, path: string, max: number = 5): Promise<modelContracts.ICocktail[]> {
         var result = await this._netClient.postJson<any, modelContracts.rawCocktail>(
             url,
             path, {});
@@ -60,7 +89,8 @@ export class cocktailService extends serviceBase implements modelContracts.ICock
                 title: value.strDrink,
                 instructions: value.strInstructions,
                 ingredients: [],
-                image: value.strDrinkThumb
+                image: value.strDrinkThumb,
+                id: value.idDrink
             }
 
             console.log(cocktail.image);

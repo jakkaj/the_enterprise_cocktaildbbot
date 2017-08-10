@@ -10,7 +10,10 @@ export interface IQnaComponent{
 }
 
 export interface ICocktailService{
-    getCocktails(cocktailName: string, max:number):Promise<ICocktail[]>
+    getCocktails(cocktailName: string, max:number):Promise<ICocktail[]>;
+    getRandomCocktail(): Promise<ICocktail[]>;
+    getByIngredient(ingredientName: string, max:number): Promise<ICocktail[]>;
+    getById(id: string): Promise<ICocktail[]>;
 }
 
 
@@ -18,7 +21,8 @@ export interface ICocktail {
     title: string,
     instructions: string,
     ingredients: string[],
-    image: string
+    image: string,
+    id:string
 }
 
 /**

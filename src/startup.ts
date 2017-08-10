@@ -19,6 +19,9 @@ import dataDialog from "./dialogs/dynamic/dataDialog";
 import { netClient } from "./system/helpers/netClient";
 
 import * as modelContracts from './model/modelContracts';
+
+import {findByIngredientServiceRunner} from './model/components/serviceRunners';
+
 import qnaComponent from './model/components/samples/qnaComponent';
 import { configBase } from "./system/services/serviceBase";
 
@@ -52,6 +55,9 @@ export default class startup {
 
         this._container.bind<modelContracts.ICocktailService>(modelContracts.modelSymbols.ICocktailService)
                 .to(cocktailService);   
+
+        this._container.bind<contracts.IServiceRunner>("findByIngredientServiceRunner")
+            .to(findByIngredientServiceRunner);     
     }
     
     /**
