@@ -11,8 +11,8 @@ import * as modelContracts from './../../model/modelContracts';
 @injectable()
 export default class mainCocktailSearchDialog extends serviceBase implements contracts.IDialog {
 
-    public id: string = 'cocktailSearch';
-    public name: string = 'cocktailSearch';
+    public id: string = 'mainCocktailSearchDialog';
+    public name: string = 'mainCocktailSearchDialog';
     public trigger: string = 'How to make a cocktail';
 
     private _cocktailService: modelContracts.ICocktailService;
@@ -44,11 +44,12 @@ export default class mainCocktailSearchDialog extends serviceBase implements con
 
         if (args === undefined) {
             session.endConversation('something went wrong- couldn\'t get intent');
+            return;
         }
 
-        var jsoned = JSON.stringify(args);
+        // var jsoned = JSON.stringify(args);
 
-        console.log(jsoned);
+        // console.log(jsoned);
 
         let entity = builder.EntityRecognizer.findEntity(args.intent.entities, 'cocktail name');
 

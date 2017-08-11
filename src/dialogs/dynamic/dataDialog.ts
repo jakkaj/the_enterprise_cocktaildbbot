@@ -130,6 +130,10 @@ export default class dataDialog extends dynamicDialogBase {
             return;
         }
 
+        var jsoned = JSON.stringify(args);
+        
+        console.log(jsoned);
+
         for (let i in this._dialog.data.fields) {
             let field = this._dialog.data.fields[i];
             let entity = builder.EntityRecognizer.findEntity(args.intent.entities, field.entityName);
@@ -222,14 +226,32 @@ export default class dataDialog extends dynamicDialogBase {
                 let runnerResult: contracts.IServiceRunnerResult = null;
 
                 if (action.serviceUrlAfter) {
-                    runnerResult = await this._genericServiceRunner.run(session.dialogData, { url: action.serviceUrlAfter });
+                    try{
+                        runnerResult = await this._genericServiceRunner.run(session.dialogData, { url: action.serviceUrlAfter });
+                    }catch(e)
+                    {
+                        session.endDialog(e);
+                        return;
+                    }
+                    
                 }
 
                 if (action.serviceRunnerAfter) {
                     var runner = this.resolve<contracts.IServiceRunner>(action.serviceRunnerAfter);
-                    runnerResult = await runner.run(session.dialogData);
+                    try{
+                        runnerResult = await runner.run(session.dialogData);
+                    }catch(e)
+                    {
+                        session.endDialog(e);
+                        return;
+                    }                    
                 }
-                
+
+                if(!runnerResult){
+                    session.endDialog();
+                    return;
+                }
+
                 if (runnerResult.text) {
                     session.send(runnerResult.text);
                 }

@@ -33,7 +33,7 @@ export class dataServiceRunner extends serviceBase implements contracts.IService
 
         this.logger.log(`Generic service runner calling ${options.url}`);
 
-        var result = await this._netClient.postJson<any, contracts.IServiceRunnerResult>(options.url, "&", args);
+        var result = await this._netClient.postJson<any, contracts.IServiceRunnerResult>(options.url, "", args);
 
         return result;
     }
