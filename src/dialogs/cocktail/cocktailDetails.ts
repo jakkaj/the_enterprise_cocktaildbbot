@@ -73,7 +73,5 @@ export default class cocktailDetailsDialog extends serviceBase implements contra
         session.send(reply)
 
         session.endDialog();        
-    }
-
-   
+    }   
 }

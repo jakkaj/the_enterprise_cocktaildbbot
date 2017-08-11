@@ -1,7 +1,12 @@
 import * as builder from 'botbuilder';
 
 export interface IServiceRunner{
-    run(args: any):Promise<IServiceRunnerResult>;
+    run(args: any, options?:IServiceRunnerOptions):Promise<IServiceRunnerResult>;
+}
+
+export interface IServiceRunnerOptions{
+    url?:string;
+    path?:string;
 }
 
 export interface IServiceRunnerResult{
@@ -84,7 +89,8 @@ let contractSymbols = {
     IHostService: Symbol("IHostService"),
     IBotService: Symbol("IBotService"), 
     INetClient: Symbol("INetClient"),
-    dataDialog: Symbol("dataDialog")
+    dataDialog: Symbol("dataDialog"),
+    IServiceRunner: Symbol("IServiceRunner")
 }
 
 export {contractSymbols, ILogService, IHostService, IBotService, IDialog, INetClient,

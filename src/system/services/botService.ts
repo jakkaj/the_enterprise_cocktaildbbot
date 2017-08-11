@@ -57,6 +57,7 @@ export class botService extends serviceBase implements contracts.IBotService {
 
         var dynamicConfigs: contracts.graphDialog[] = new Array<contracts.graphDialog>();
         dynamicConfigs.push(this.getFindIngredientsDialogData());       
+        dynamicConfigs.push(this.getRandomDrinkDialogData());  
 
         for(let i in dynamicConfigs){
             let dialogConfig = dynamicConfigs[i];
@@ -104,6 +105,27 @@ export class botService extends serviceBase implements contracts.IBotService {
             initialSay: `Okay let's find some cocktails by their ingredients.`,
             action:{
                 serviceRunnerAfter:"findByIngredientServiceRunner"
+            }
+        }
+
+        return graphDialog;
+    }
+
+    getRandomDrinkDialogData():contracts.graphDialog{        
+       
+
+        var d:contracts.dialogData = {
+            
+        }
+
+        var graphDialog:contracts.graphDialog = {
+            isLuis: true,
+            triggerText: 'Show me a random cocktail',
+            id: 'randomCocktail',
+            data: d,
+            initialSay: `Okay let's get some random up in here`,
+            action:{
+                serviceUrlAfter:"https://cocktailservicesforndc.azurewebsites.net/api/FindRandom?code=wUJRdzfE56kRrXCkdhM3a6LFklQR1DDFyV/lYGc0dC6PfRsRFHCzIg=="
             }
         }
 
