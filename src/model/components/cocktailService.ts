@@ -39,7 +39,7 @@ export class cocktailService extends serviceBase implements modelContracts.ICock
         return await this._runQuery(url, path);
     }
 
-    public async getByIngredient(ingredientName: string, max:number = 5): Promise<modelContracts.ICocktail[]> {
+    public async getByIngredient(ingredientName: string, max: number = 5): Promise<modelContracts.ICocktail[]> {
         //http://www.thecocktaildb.com/api/json/v1/1/filter.php?i=Gin
         let url = `http://www.thecocktaildb.com/`;
         let path = `/api/json/v1/1/filter.php?i=${ingredientName}`;
@@ -56,16 +56,22 @@ export class cocktailService extends serviceBase implements modelContracts.ICock
 
     public async getById(id: string): Promise<modelContracts.ICocktail[]> {
         let url = `http://www.thecocktaildb.com/`;
-        let path = `/api/json/v1/1/lookup.php?i=${id}`;    
-        return await this._runQuery(url, path);    
+        let path = `/api/json/v1/1/lookup.php?i=${id}`;
+        return await this._runQuery(url, path);
     }
 
     //http://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=15112
 
     private async _runQuery(url: string, path: string, max: number = 5): Promise<modelContracts.ICocktail[]> {
-        var result = await this._netClient.postJson<any, modelContracts.rawCocktail>(
-            url,
-            path, {});
+        var result: modelContracts.rawCocktail = null;
+        try {
+            result = await this._netClient.postJson<any, modelContracts.rawCocktail>(
+                url,
+                path, {});
+        } catch (e) {
+            return null;
+        }
+
 
         if (!result || !result.drinks) {
             return null;
@@ -83,8 +89,8 @@ export class cocktailService extends serviceBase implements modelContracts.ICock
 
         result.drinks.forEach((value: modelContracts.Drink) => {
 
-            var asAny: any = value; 
-            
+            var asAny: any = value;
+
             var cocktail: ICocktail = {
                 title: value.strDrink,
                 instructions: value.strInstructions,
@@ -96,13 +102,13 @@ export class cocktailService extends serviceBase implements modelContracts.ICock
             console.log(cocktail.image);
 
             for (let i = 1; i <= 15; i++) {
-                
+
                 var ingredient = asAny[`strIngredient${i}`] + ' ' + asAny[`strMeasure${i}`];
                 ingredient = ingredient.replace('\r\n', '');
-                
-                if(ingredient.length > 1){
+
+                if (ingredient.length > 1) {
                     cocktail.ingredients.push(ingredient);
-                }               
+                }
             }
 
             cocktails.push(cocktail);
