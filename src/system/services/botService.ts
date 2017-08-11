@@ -49,7 +49,14 @@ export class botService extends serviceBase implements contracts.IBotService {
 
         for (var i in this._dialogs) {
             var dialog: contracts.IDialog = this._dialogs[i];
-            this._bot.dialog(dialog.id, dialog.waterfall).triggerAction({ matches: dialog.trigger });
+            this._bot.dialog(dialog.id, dialog.waterfall).triggerAction({ 
+                matches: dialog.trigger
+                // onSelectAction: (session, args, next) => {
+                //     // Add the help dialog to the dialog stack 
+                //     // (override the default behavior of replacing the stack)
+                //     session.beginDialog(args.action, args);
+                // }
+            });
             console.log(dialog.id);
         }
 
@@ -63,8 +70,36 @@ export class botService extends serviceBase implements contracts.IBotService {
             let dialogConfig = dynamicConfigs[i];
             let dynamicDialog:contracts.IDialog = this.resolve<contracts.IDialog>(contracts.contractSymbols.dataDialog);           
             dynamicDialog.init(dialogConfig);
-            this._bot.dialog(dynamicDialog.id, dynamicDialog.waterfall).triggerAction({ matches: dynamicDialog.trigger });
+            var dAdded = this._bot.dialog(dynamicDialog.id, dynamicDialog.waterfall).triggerAction(
+                { 
+                     matches: dynamicDialog.trigger
+                    // onSelectAction: (session, args, next) => {
+                    //     // Add the help dialog to the dialog stack 
+                    //     // (override the default behavior of replacing the stack)
+                    //     console.log(args);
+                    //     session.beginDialog(args.action, args);
+                    // } 
+                });      
+
+            this._addActions(dAdded, dialogConfig, dynamicConfigs);
         }        
+    }
+
+    private _addActions(dialog: builder.Dialog, currentDialogData: contracts.graphDialog, dialogs: contracts.graphDialog[]){
+        for (let i in dialogs) {
+
+            let dialogConfig = dialogs[i];
+            
+            if(currentDialogData === dialogConfig){
+                continue;
+            }
+
+            var trigger:string|RegExp = (dialogConfig.triggerText || dialogConfig.triggerRegex);
+
+            dialog.beginDialogAction(`${dialogConfig.id}_action`, dialogConfig.id, {
+                matches: trigger
+            });
+        }
     }
 
     /**
@@ -74,8 +109,16 @@ export class botService extends serviceBase implements contracts.IBotService {
         if (this.config.luisModelUrl && this.config.luisModelUrl.length > 0) {
             var luisRecognizer = new builder.LuisRecognizer(this.config.luisModelUrl)
                 .onEnabled(function (context, callback) {
-                    var enabled = context.dialogStack().length === 0;
-                    callback(null, enabled);
+                    //var enabled = context.dialogStack().length === 0;
+                    callback(null, true);
+                }).onFilter(function(context, result, callback) {
+                    // Only allow it to work if the intent match is high
+                    if(result.score < .3){
+                        callback(null, null);
+                    }else{
+                        callback(null, result);
+                    }
+                   
                 });
             this._bot.recognizer(luisRecognizer);
             
@@ -131,26 +174,4 @@ export class botService extends serviceBase implements contracts.IBotService {
 
         return graphDialog;
     }
-
-    // getStartOrderDialogData():contracts.graphDialog{        
-    //     var fields: contracts.dialogField[] = [{
-    //         entityName: 'deliveryMode',
-    //         promptText: 'Would you like take away or home delivery?',
-    //         choice:["Home Delivery", "Pickup"]
-    //     }];
-
-    //     var d:contracts.dialogData = {
-    //         fields:fields
-    //     }
-
-    //     var graphDialog:contracts.graphDialog = {
-    //         isLuis: true,
-    //         triggerText: 'StartOrder',
-    //         id: 'startOrderDialog',
-    //         data: d,
-    //         initialSay: `Okay, let's get us some pizza!`           
-    //     }
-
-    //     return graphDialog;
-    // }
 }

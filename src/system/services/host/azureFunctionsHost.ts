@@ -23,6 +23,7 @@ export class azureFunctionsHostService extends serviceBase implements IHostServi
         this._context = context;
         this.log("Azure Context");        
         this._listener(req, context.res);
+
     }
 
     public log(message:string){
