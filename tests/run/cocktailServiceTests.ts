@@ -10,20 +10,7 @@ import * as contracts from "../../src/system/contract/contracts";
 class cocktailLiveTests extends testBase{
     async test_gets_a_cocktail(t:TestContext){
         
-        var cocktailService = this.resolve<modelContracts.ICocktailService>
-            (modelContracts.modelSymbols.ICocktailService);
-        
-        t.truthy(cocktailService);
-
-        let max:number = 2;
-
-        var result = await cocktailService.getCocktails("manhattan", max);
-
-        t.true(result.length > 0);
-        
-        t.is(result.length, max)
-
-        t.true(result[0].ingredients.length > 0);        
+       
     }
 }
 
