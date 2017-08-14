@@ -52,7 +52,10 @@ export default class startup {
     private _registerCustomComponents() {
         //Your services registered here   
         this._container.bind<modelContracts.IQnaComponent>(modelContracts.modelSymbols.IQnaComponent)
-            .to(qnaComponent);       
+            .to(qnaComponent);
+
+        this._container.bind<modelContracts.ICocktailService>(modelContracts.modelSymbols.ICocktailService)
+            .to(cocktailService);
 
         this._container.bind<contracts.IServiceRunner>("findByIngredientServiceRunner")
             .to(findByIngredientServiceRunner);
